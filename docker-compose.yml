@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: hemovita-mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: sua_senha
+      MYSQL_DATABASE: hemovita
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+  backend:
+    build: ./backend
+    container_name: hemovita-backend
+    restart: always
+    env_file:
+      - ./backend/.env
+    ports:
+      - "3001:3001"
+    depends_on:
+      - mysql
+    volumes:
+      - ./backend:/app
+
+volumes:
+  mysql_data:

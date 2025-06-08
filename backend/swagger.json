@@ -1,0 +1,1058 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "HemoVita API",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/api/auth/login": {
+      "post": {
+        "summary": "Login do usuário",
+        "description": "Autentica um usuário e retorna um token JWT.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": { "type": "string" },
+                  "senha": { "type": "string" }
+                },
+                "required": ["email", "senha"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Login realizado com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "token": { "type": "string" }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Usuário ou senha inválidos"
+          }
+        }
+      }
+    },
+    "/api/pacientes": {
+      "get": {
+        "summary": "Listar todos os pacientes",
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "200": {
+            "description": "Lista de pacientes",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/Paciente" }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Cadastrar novo paciente",
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/Paciente" }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "Paciente criado" }
+        }
+      }
+    },
+    "/api/pacientes/{id}": {
+      "get": {
+        "summary": "Buscar paciente por ID",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "Paciente encontrado",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Paciente" }
+              }
+            }
+          },
+          "404": { "description": "Paciente não encontrado" }
+        }
+      },
+      "put": {
+        "summary": "Editar paciente",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/Paciente" }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Paciente atualizado" },
+          "404": { "description": "Paciente não encontrado" }
+        }
+      },
+      "delete": {
+        "summary": "Deletar paciente",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }
+        ],
+        "responses": {
+          "204": { "description": "Paciente deletado" },
+          "404": { "description": "Paciente não encontrado" }
+        }
+      }
+    },
+    "/api/profissionais": {
+      "get": {
+        "summary": "Listar todos os profissionais",
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "200": {
+            "description": "Lista de profissionais",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/Profissional" }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Cadastrar novo profissional",
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/Profissional" }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "Profissional criado" }
+        }
+      }
+    },
+    "/api/profissionais/{id}": {
+      "get": {
+        "summary": "Buscar profissional por ID",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "Profissional encontrado",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Profissional" }
+              }
+            }
+          },
+          "404": { "description": "Profissional não encontrado" }
+        }
+      },
+      "put": {
+        "summary": "Editar profissional",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/Profissional" }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Profissional atualizado" },
+          "404": { "description": "Profissional não encontrado" }
+        }
+      },
+      "delete": {
+        "summary": "Deletar profissional",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }
+        ],
+        "responses": {
+          "204": { "description": "Profissional deletado" },
+          "404": { "description": "Profissional não encontrado" }
+        }
+      }
+    },
+    "/api/exames": {
+      "get": {
+        "summary": "Listar todos os exames",
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "200": {
+            "description": "Lista de exames",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/Exame" }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Cadastrar novo exame",
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/Exame" }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "Exame criado" }
+        }
+      }
+    },
+    "/api/exames/{id}": {
+      "get": {
+        "summary": "Buscar exame por ID",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "Exame encontrado",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Exame" }
+              }
+            }
+          },
+          "404": { "description": "Exame não encontrado" }
+        }
+      },
+      "put": {
+        "summary": "Editar exame",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/Exame" }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Exame atualizado" },
+          "404": { "description": "Exame não encontrado" }
+        }
+      },
+      "delete": {
+        "summary": "Deletar exame",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }
+        ],
+        "responses": {
+          "204": { "description": "Exame deletado" },
+          "404": { "description": "Exame não encontrado" }
+        }
+      }
+    },
+    "/api/atendimentos": {
+      "get": {
+        "summary": "Listar todos os atendimentos",
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "200": {
+            "description": "Lista de atendimentos",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/Atendimento" }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Cadastrar novo atendimento",
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/Atendimento" }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "Atendimento criado" }
+        }
+      }
+    },
+    "/api/atendimentos/{id}": {
+      "get": {
+        "summary": "Buscar atendimento por ID",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "Atendimento encontrado",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Atendimento" }
+              }
+            }
+          },
+          "404": { "description": "Atendimento não encontrado" }
+        }
+      },
+      "put": {
+        "summary": "Editar atendimento",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/Atendimento" }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Atendimento atualizado" },
+          "404": { "description": "Atendimento não encontrado" }
+        }
+      },
+      "delete": {
+        "summary": "Deletar atendimento",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }
+        ],
+        "responses": {
+          "204": { "description": "Atendimento deletado" },
+          "404": { "description": "Atendimento não encontrado" }
+        }
+      }
+    },
+    "/api/prontuarios": {
+      "get": {
+        "summary": "Listar todos os prontuários",
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "200": {
+            "description": "Lista de prontuários",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/Prontuario" }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Cadastrar novo prontuário",
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/Prontuario" }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "Prontuário criado" }
+        }
+      }
+    },
+    "/api/prontuarios/{id}": {
+      "get": {
+        "summary": "Buscar prontuário por ID",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "Prontuário encontrado",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Prontuario" }
+              }
+            }
+          },
+          "404": { "description": "Prontuário não encontrado" }
+        }
+      },
+      "put": {
+        "summary": "Editar prontuário",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/Prontuario" }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Prontuário atualizado" },
+          "404": { "description": "Prontuário não encontrado" }
+        }
+      },
+      "delete": {
+        "summary": "Deletar prontuário",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }
+        ],
+        "responses": {
+          "204": { "description": "Prontuário deletado" },
+          "404": { "description": "Prontuário não encontrado" }
+        }
+      }
+    },
+    "/api/atestados": {
+      "get": {
+        "summary": "Listar todos os atestados",
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "200": {
+            "description": "Lista de atestados",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/Atestado" }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Cadastrar novo atestado",
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/Atestado" }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "Atestado criado" }
+        }
+      }
+    },
+    "/api/atestados/{id}": {
+      "get": {
+        "summary": "Buscar atestado por ID",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "Atestado encontrado",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Atestado" }
+              }
+            }
+          },
+          "404": { "description": "Atestado não encontrado" }
+        }
+      },
+      "put": {
+        "summary": "Editar atestado",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/Atestado" }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Atestado atualizado" },
+          "404": { "description": "Atestado não encontrado" }
+        }
+      },
+      "delete": {
+        "summary": "Deletar atestado",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }
+        ],
+        "responses": {
+          "204": { "description": "Atestado deletado" },
+          "404": { "description": "Atestado não encontrado" }
+        }
+      }
+    },
+    "/api/evolucoes": {
+      "get": {
+        "summary": "Listar todas as evoluções",
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "200": {
+            "description": "Lista de evoluções",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/Evolucao" }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Cadastrar nova evolução",
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/Evolucao" }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "Evolução criada" }
+        }
+      }
+    },
+    "/api/evolucoes/{id}": {
+      "get": {
+        "summary": "Buscar evolução por ID",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "Evolução encontrada",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Evolucao" }
+              }
+            }
+          },
+          "404": { "description": "Evolução não encontrada" }
+        }
+      },
+      "put": {
+        "summary": "Editar evolução",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/Evolucao" }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Evolução atualizada" },
+          "404": { "description": "Evolução não encontrada" }
+        }
+      },
+      "delete": {
+        "summary": "Deletar evolução",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }
+        ],
+        "responses": {
+          "204": { "description": "Evolução deletada" },
+          "404": { "description": "Evolução não encontrada" }
+        }
+      }
+    },
+    "/api/farmacia": {
+      "get": {
+        "summary": "Listar todos os medicamentos",
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "200": {
+            "description": "Lista de medicamentos",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/Medicamento" }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Cadastrar novo medicamento",
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/Medicamento" }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "Medicamento criado" }
+        }
+      }
+    },
+    "/api/farmacia/{id}": {
+      "get": {
+        "summary": "Buscar medicamento por ID",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "Medicamento encontrado",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Medicamento" }
+              }
+            }
+          },
+          "404": { "description": "Medicamento não encontrado" }
+        }
+      },
+      "put": {
+        "summary": "Editar medicamento",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/Medicamento" }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Medicamento atualizado" },
+          "404": { "description": "Medicamento não encontrado" }
+        }
+      },
+      "delete": {
+        "summary": "Deletar medicamento",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }
+        ],
+        "responses": {
+          "204": { "description": "Medicamento deletado" },
+          "404": { "description": "Medicamento não encontrado" }
+        }
+      }
+    },
+    "/api/checklists": {
+      "get": {
+        "summary": "Listar todos os checklists de triagem",
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "200": {
+            "description": "Lista de checklists",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/Checklist" }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Cadastrar novo checklist de triagem",
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/Checklist" }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "Checklist criado" }
+        }
+      }
+    },
+    "/api/checklists/{id}": {
+      "get": {
+        "summary": "Buscar checklist por ID",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "Checklist encontrado",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Checklist" }
+              }
+            }
+          },
+          "404": { "description": "Checklist não encontrado" }
+        }
+      },
+      "put": {
+        "summary": "Editar checklist de triagem",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/Checklist" }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Checklist atualizado" },
+          "404": { "description": "Checklist não encontrado" }
+        }
+      },
+      "delete": {
+        "summary": "Deletar checklist de triagem",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }
+        ],
+        "responses": {
+          "204": { "description": "Checklist deletado" },
+          "404": { "description": "Checklist não encontrado" }
+        }
+      }
+    },
+    "/api/triagens": {
+      "get": {
+        "summary": "Listar todas as triagens",
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "200": {
+            "description": "Lista de triagens",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/Triagem" }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Cadastrar nova triagem",
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/Triagem" }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "Triagem criada" }
+        }
+      }
+    },
+    "/api/triagens/{id}": {
+      "get": {
+        "summary": "Buscar triagem por ID",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "Triagem encontrada",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Triagem" }
+              }
+            }
+          },
+          "404": { "description": "Triagem não encontrada" }
+        }
+      },
+      "put": {
+        "summary": "Editar triagem",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/Triagem" }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Triagem atualizada" },
+          "404": { "description": "Triagem não encontrada" }
+        }
+      },
+      "delete": {
+        "summary": "Deletar triagem",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }
+        ],
+        "responses": {
+          "204": { "description": "Triagem deletada" },
+          "404": { "description": "Triagem não encontrada" }
+        }
+      }
+    },
+    "/api/usuarios": {
+      "get": {
+        "summary": "Listar todos os usuários",
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "200": {
+            "description": "Lista de usuários",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/Usuario" }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Cadastrar novo usuário",
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/Usuario" }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "Usuário criado" }
+        }
+      }
+    },
+    "/api/usuarios/{id}": {
+      "get": {
+        "summary": "Buscar usuário por ID",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "Usuário encontrado",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Usuario" }
+              }
+            }
+          },
+          "404": { "description": "Usuário não encontrado" }
+        }
+      },
+      "delete": {
+        "summary": "Deletar usuário",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }
+        ],
+        "responses": {
+          "204": { "description": "Usuário deletado" },
+          "404": { "description": "Usuário não encontrado" }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Paciente": {
+        "type": "object",
+        "properties": {
+          "id_paciente": { "type": "integer" },
+          "nome_paciente": { "type": "string" },
+          "idade": { "type": "integer" }
+        }
+      },
+      "Profissional": {
+        "type": "object",
+        "properties": {
+          "nome": { "type": "string" },
+          "cargo": { "type": "string" },
+          "crm": { "type": "string" },
+          "especialidade": { "type": "string" },
+          "email": { "type": "string" },
+          "senha": { "type": "string" },
+          "status": { "type": "string" }
+        },
+        "required": ["nome", "cargo", "crm", "especialidade", "email", "senha", "status"]
+      },
+      "Exame": {
+        "type": "object",
+        "properties": {
+          "id_exame": { "type": "integer" },
+          "tipo_exame": { "type": "string" },
+          "resultado": { "type": "string" }
+        }
+      },
+      "Atendimento": {
+        "type": "object",
+        "properties": {
+          "id_atendimento": { "type": "integer" },
+          "descricao": { "type": "string" },
+          "data_atendimento": { "type": "string", "format": "date" }
+        }
+      },
+      "Prontuario": {
+        "type": "object",
+        "properties": {
+          "id_prontuario": { "type": "integer" },
+          "descricao": { "type": "string" },
+          "data_prontuario": { "type": "string", "format": "date" }
+        }
+      },
+      "Atestado": {
+        "type": "object",
+        "properties": {
+          "id_atestado": { "type": "integer" },
+          "descricao": { "type": "string" },
+          "dt_emissao": { "type": "string", "format": "date" }
+        }
+      },
+      "Evolucao": {
+        "type": "object",
+        "properties": {
+          "id_evolucao": { "type": "integer" },
+          "descricao": { "type": "string" },
+          "dt_evolucao": { "type": "string", "format": "date" }
+        }
+      },
+      "Medicamento": {
+        "type": "object",
+        "properties": {
+          "id_medicamento": { "type": "integer" },
+          "nome_medicamento": { "type": "string" },
+          "quantidade": { "type": "integer" }
+        }
+      },
+      "Checklist": {
+        "type": "object",
+        "properties": {
+          "id_checklist": { "type": "integer" },
+          "descricao": { "type": "string" },
+          "dt_checklist": { "type": "string", "format": "date" }
+        }
+      },
+      "Triagem": {
+        "type": "object",
+        "properties": {
+          "id_triagem": { "type": "integer" },
+          "descricao": { "type": "string" },
+          "dt_triagem": { "type": "string", "format": "date" }
+        }
+      },
+      "Usuario": {
+        "type": "object",
+        "properties": {
+          "id_usuario": { "type": "integer" },
+          "email": { "type": "string" },
+          "senha": { "type": "string" },
+          "role": { "type": "string" }
+        }
+      }
+    },
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  }
+}
