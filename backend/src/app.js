@@ -1,8 +1,8 @@
 const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
+const swaggerJsdoc = require('swagger-jsdoc');
 const swaggerUi = require('swagger-ui-express');
-const swaggerDocument = require('../swagger.json');
 
 dotenv.config();
 
@@ -11,7 +11,21 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+const swaggerOptions = {
+  swaggerDefinition: {
+    openapi: '3.0.0',
+    info: {
+      title: 'HemoVita API',
+      version: '1.0.0',
+      description: 'Documentação da API HemoVita',
+    },
+    servers: [{ url: 'http://localhost:3001' }],
+  },
+  apis: ['./src/routes/*.js'],
+};
+
+const swaggerDocs = swaggerJsdoc(swaggerOptions);
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 app.get('/', (req, res) => res.send('API HemoVita rodando!'));
 
 app.use('/api/auth', require('./routes/authRoutes'));
@@ -27,11 +41,8 @@ app.use('/api/evolucoes', require('./routes/evolucaoRoutes'));
 app.use('/api/checklists', require('./routes/checklistTriagemRoutes'));
 app.use('/api/triagens', require('./routes/triagemRoutes'));
 app.use('/api/usuarios', require('./routes/usuarioRoutes'));
-
-
-
-
-
+const dashboardRoutes = require('./routes/dashboard');
+app.use('/api/dashboard', dashboardRoutes);
 
 
 module.exports = app;

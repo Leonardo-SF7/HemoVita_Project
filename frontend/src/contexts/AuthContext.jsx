@@ -21,7 +21,9 @@ export function AuthProvider({ children }) {
     localStorage.removeItem('role');
   };
 
-  useEffect(() => {}, []);
+  useEffect(() => {
+    
+  }, []);
 
   return (
     <AuthContext.Provider value={{ token, role, login, logout, loading }}>

@@ -9,6 +9,8 @@ import {
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AssignmentIndIcon from '@mui/icons-material/AssignmentInd';
+import jsPDF from 'jspdf';
+import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
 
 function Atendimentos() {
   const [atendimentos, setAtendimentos] = useState([]);
@@ -23,6 +25,7 @@ function Atendimentos() {
   const [editando, setEditando] = useState(null);
   const [novaDescricao, setNovaDescricao] = useState('');
   const [novaData, setNovaData] = useState('');
+  const [filtro, setFiltro] = useState('');
   const { token } = useAuth();
   const { showMessage } = useFeedback();
 
@@ -116,6 +119,43 @@ function Atendimentos() {
       showMessage('Erro ao editar atendimento', 'error');
     }
   }
+
+  const handleDownloadPdf = (atendimento) => {
+    const doc = new jsPDF();
+    doc.setFontSize(12);
+    doc.text(`Atendimento - ${atendimento.id_atendimento}`, 14, 22);
+    doc.text(`Paciente: ${atendimento.paciente.nome}`, 14, 32);
+    doc.text(`Profissional: ${atendimento.profissional.nome_profi}`, 14, 42);
+    doc.text(`Tipo de Atendimento: ${atendimento.tipo_atendimento}`, 14, 52);
+    doc.text(`Notas: ${atendimento.notas}`, 14, 62);
+    doc.text(`Leito: ${atendimento.leito}`, 14, 72);
+    doc.text(`Evolução: ${atendimento.evolucao}`, 14, 82);
+    doc.text(`Data: ${new Date(atendimento.data_atendimento).toLocaleString()}`, 14, 92);
+    doc.save(`atendimento_${atendimento.id_atendimento}.pdf`);
+  };
+
+  const exportarPDF = () => {
+    const doc = new jsPDF();
+    doc.setFontSize(16);
+    doc.text('Relatório de Atendimentos', 10, 10);
+
+    let y = 20;
+    atendimentos.forEach((a, i) => {
+      doc.setFontSize(12);
+      doc.text(
+        `${i + 1}. Tipo: ${a.tipo_atendimento} | Paciente: ${a.nome_paciente || ''} | Profissional: ${a.nome_profi || ''} | Data: ${a.dt_atendimento || a.data_atendimento || ''}`,
+        10,
+        y
+      );
+      y += 8;
+      if (y > 270) {
+        doc.addPage();
+        y = 10;
+      }
+    });
+
+    doc.save('relatorio_atendimentos.pdf');
+  };
 
   return (
     <Box sx={{ maxWidth: 600, mx: 'auto', mt: 4 }}>
@@ -219,58 +259,79 @@ function Atendimentos() {
           </Grid>
         </form>
         {error && <Typography color="error" sx={{ mt: 1 }}>{error}</Typography>}
+        <TextField
+          label="Buscar atendimento"
+          value={filtro}
+          onChange={e => setFiltro(e.target.value)}
+          fullWidth
+          sx={{ mt: 3, mb: 2 }}
+        />
         <Divider sx={{ my: 3 }} />
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={exportarPDF}
+          startIcon={<PictureAsPdfIcon />}
+          sx={{ mb: 2 }}
+        >
+          Exportar PDF
+        </Button>
         <List>
-          {atendimentos.map(atendimento => (
-            <ListItem
-              key={atendimento.id_atendimento}
-              secondaryAction={
-                editando !== atendimento.id_atendimento && (
-                  <>
-                    <IconButton onClick={() => startEdit(atendimento)} color="primary">
-                      <EditIcon />
-                    </IconButton>
-                    <IconButton onClick={() => handleDelete(atendimento.id_atendimento)} color="error">
-                      <DeleteIcon />
-                    </IconButton>
-                  </>
-                )
-              }
-              sx={{ mb: 1, borderRadius: 1, bgcolor: editando === atendimento.id_atendimento ? 'grey.100' : 'inherit' }}
-            >
-              {editando === atendimento.id_atendimento ? (
-                <form onSubmit={handleEdit} style={{ display: 'flex', gap: 8, width: '100%' }}>
-                  <TextField
-                    value={novaDescricao}
-                    onChange={e => setNovaDescricao(e.target.value)}
-                    required
-                    size="small"
-                    fullWidth
+          {atendimentos
+            .filter(a => a.tipo_atendimento.toLowerCase().includes(filtro.toLowerCase()))
+            .map(atendimento => (
+              <ListItem
+                key={atendimento.id_atendimento}
+                secondaryAction={
+                  editando !== atendimento.id_atendimento && (
+                    <>
+                      <IconButton onClick={() => startEdit(atendimento)} color="primary">
+                        <EditIcon />
+                      </IconButton>
+                      <IconButton onClick={() => handleDelete(atendimento.id_atendimento)} color="error">
+                        <DeleteIcon />
+                      </IconButton>
+                      <IconButton onClick={() => handleDownloadPdf(atendimento)} color="default">
+                        <PictureAsPdfIcon />
+                      </IconButton>
+                    </>
+                  )
+                }
+                sx={{ mb: 1, borderRadius: 1, bgcolor: editando === atendimento.id_atendimento ? 'grey.100' : 'inherit' }}
+              >
+                {editando === atendimento.id_atendimento ? (
+                  <form onSubmit={handleEdit} style={{ display: 'flex', gap: 8, width: '100%' }}>
+                    <TextField
+                      value={novaDescricao}
+                      onChange={e => setNovaDescricao(e.target.value)}
+                      required
+                      size="small"
+                      fullWidth
+                    />
+                    <TextField
+                      type="date"
+                      value={novaData}
+                      onChange={e => setNovaData(e.target.value)}
+                      required
+                      size="small"
+                      fullWidth
+                      InputLabelProps={{ shrink: true }}
+                    />
+                    <Button type="submit" size="small" variant="contained" color="primary">Salvar</Button>
+                    <Button type="button" onClick={() => setEditando(null)} size="small" color="inherit">Cancelar</Button>
+                  </form>
+                ) : (
+                  <ListItemText
+                    primary={
+                      <Typography variant="subtitle1" sx={{ fontWeight: 500 }}>
+                        {atendimento.descricao}
+                      </Typography>
+                    }
+                    secondary={atendimento.data_atendimento}
                   />
-                  <TextField
-                    type="date"
-                    value={novaData}
-                    onChange={e => setNovaData(e.target.value)}
-                    required
-                    size="small"
-                    fullWidth
-                    InputLabelProps={{ shrink: true }}
-                  />
-                  <Button type="submit" size="small" variant="contained" color="primary">Salvar</Button>
-                  <Button type="button" onClick={() => setEditando(null)} size="small" color="inherit">Cancelar</Button>
-                </form>
-              ) : (
-                <ListItemText
-                  primary={
-                    <Typography variant="subtitle1" sx={{ fontWeight: 500 }}>
-                      {atendimento.descricao}
-                    </Typography>
-                  }
-                  secondary={atendimento.data_atendimento}
-                />
-              )}
-            </ListItem>
-          ))}
+                )}
+              </ListItem>
+            ))}
         </List>
       </Paper>
     </Box>

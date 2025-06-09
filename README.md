@@ -88,6 +88,9 @@ npm start
 ## 🛠️ Funcionalidades
 
 - Login e autenticação JWT
+- Dashboard com indicadores dinâmicos por perfil de usuário
+- Filtro de busca em listagens (ex: pacientes, exames, atendimentos, etc)
+- Exportação de dados em PDF nas principais telas
 - Cadastro, edição e exclusão de:
   - Pacientes
   - Profissionais
@@ -103,6 +106,20 @@ npm start
 - Menu lateral minimalista e responsivo
 - Feedback visual de sucesso/erro
 - Permissões por papel de usuário
+
+---
+
+## 🆕 Novidades
+
+### Indicadores no Dashboard
+- Visualização de totais de pacientes, atendimentos e exames, com gráficos mensais.
+- Os indicadores exibidos variam conforme o perfil do usuário (admin, médico, enfermeiro, etc).
+
+### Filtro por Busca
+- Todas as listagens principais possuem campo de busca para facilitar a localização de registros.
+
+### Exportação em PDF
+- É possível exportar os dados das principais telas (ex: listagem de pacientes, exames, atendimentos) em formato PDF com apenas um clique.
 
 ---
 

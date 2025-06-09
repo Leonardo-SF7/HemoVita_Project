@@ -141,6 +141,7 @@ function Usuarios() {
                   <MenuItem value="medico">Médico</MenuItem>
                   <MenuItem value="enfermeiro">Enfermeiro</MenuItem>
                   <MenuItem value="tecnico">Técnico</MenuItem>
+                  <MenuItem value="recepcionista">Recepcionista</MenuItem> {/* Adicione esta linha */}
                 </Select>
               </FormControl>
             </Grid>
@@ -192,6 +193,7 @@ function Usuarios() {
                       <MenuItem value="medico">Médico</MenuItem>
                       <MenuItem value="enfermeiro">Enfermeiro</MenuItem>
                       <MenuItem value="tecnico">Técnico</MenuItem>
+                      <MenuItem value="recepcionista">Recepcionista</MenuItem> {/* Adicione esta linha */}
                     </Select>
                   </FormControl>
                   <Button type="submit" size="small" variant="contained" color="primary">Salvar</Button>

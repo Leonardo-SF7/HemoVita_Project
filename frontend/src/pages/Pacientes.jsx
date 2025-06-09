@@ -9,6 +9,7 @@ import {
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import PersonAddAltIcon from '@mui/icons-material/PersonAddAlt';
+import jsPDF from 'jspdf';
 
 function Pacientes() {
   const [pacientes, setPacientes] = useState([]);
@@ -25,6 +26,7 @@ function Pacientes() {
   const [editando, setEditando] = useState(null);
   const [novoNome, setNovoNome] = useState('');
   const [novaIdade, setNovaIdade] = useState('');
+  const [filtro, setFiltro] = useState('');
   const { token, role } = useAuth();
   const { showMessage } = useFeedback();
 
@@ -115,6 +117,29 @@ function Pacientes() {
       showMessage('Erro ao editar paciente', 'error');
     }
   }
+
+  const exportarPDF = () => {
+    const doc = new jsPDF();
+    doc.setFontSize(16);
+    doc.text('Relatório de Pacientes', 10, 10);
+
+    let y = 20;
+    pacientes.forEach((p, i) => {
+      doc.setFontSize(12);
+      doc.text(
+        `${i + 1}. Nome: ${p.nome_paciente} | Idade: ${p.idade} | Sexo: ${p.sexo || ''}`,
+        10,
+        y
+      );
+      y += 8;
+      if (y > 270) { // Nova página se necessário
+        doc.addPage();
+        y = 10;
+      }
+    });
+
+    doc.save('relatorio_pacientes.pdf');
+  };
 
   return (
     <Box sx={{ maxWidth: 600, mx: 'auto', mt: 4 }}>
@@ -240,8 +265,15 @@ function Pacientes() {
         </form>
         {error && <Typography color="error" sx={{ mt: 1 }}>{error}</Typography>}
         <Divider sx={{ my: 3 }} />
+        <TextField
+          label="Filtrar por nome"
+          value={filtro}
+          onChange={e => setFiltro(e.target.value)}
+          fullWidth
+          sx={{ mb: 2 }}
+        />
         <List>
-          {pacientes.map(p => (
+          {pacientes.filter(p => p.nome_paciente.toLowerCase().includes(filtro.toLowerCase())).map(p => (
             <ListItem
               key={p.id_paciente}
               secondaryAction={
@@ -293,6 +325,15 @@ function Pacientes() {
             </ListItem>
           ))}
         </List>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={exportarPDF}
+          startIcon={<PersonAddAltIcon />}
+          sx={{ mt: 2 }}
+        >
+          Exportar para PDF
+        </Button>
       </Paper>
     </Box>
   );

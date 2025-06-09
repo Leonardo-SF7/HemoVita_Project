@@ -22,6 +22,7 @@ function Triagem() {
   const [idProfi, setIdProfi] = useState('');
   const [pacientes, setPacientes] = useState([]);
   const [profissionais, setProfissionais] = useState([]);
+  const [filtro, setFiltro] = useState('');
   const { token } = useAuth();
   const { showMessage } = useFeedback();
 
@@ -184,58 +185,67 @@ function Triagem() {
           </Grid>
         </form>
         {error && <Typography color="error" sx={{ mt: 1 }}>{error}</Typography>}
+        <TextField
+          label="Buscar triagem"
+          value={filtro}
+          onChange={e => setFiltro(e.target.value)}
+          fullWidth
+          sx={{ mt: 3, mb: 2 }}
+        />
         <Divider sx={{ my: 3 }} />
         <List>
-          {triagens.map(triagem => (
-            <ListItem
-              key={triagem.id_triagem}
-              secondaryAction={
-                editando !== triagem.id_triagem && (
-                  <>
-                    <IconButton onClick={() => startEdit(triagem)} color="primary">
-                      <EditIcon />
-                    </IconButton>
-                    <IconButton onClick={() => handleDelete(triagem.id_triagem)} color="error">
-                      <DeleteIcon />
-                    </IconButton>
-                  </>
-                )
-              }
-              sx={{ mb: 1, borderRadius: 1, bgcolor: editando === triagem.id_triagem ? 'grey.100' : 'inherit' }}
-            >
-              {editando === triagem.id_triagem ? (
-                <form onSubmit={handleEdit} style={{ display: 'flex', gap: 8, width: '100%' }}>
-                  <TextField
-                    value={novaDescricao}
-                    onChange={e => setNovaDescricao(e.target.value)}
-                    required
-                    size="small"
-                    fullWidth
+          {triagens
+            .filter(t => t.descricao.toLowerCase().includes(filtro.toLowerCase()))
+            .map(triagem => (
+              <ListItem
+                key={triagem.id_triagem}
+                secondaryAction={
+                  editando !== triagem.id_triagem && (
+                    <>
+                      <IconButton onClick={() => startEdit(triagem)} color="primary">
+                        <EditIcon />
+                      </IconButton>
+                      <IconButton onClick={() => handleDelete(triagem.id_triagem)} color="error">
+                        <DeleteIcon />
+                      </IconButton>
+                    </>
+                  )
+                }
+                sx={{ mb: 1, borderRadius: 1, bgcolor: editando === triagem.id_triagem ? 'grey.100' : 'inherit' }}
+              >
+                {editando === triagem.id_triagem ? (
+                  <form onSubmit={handleEdit} style={{ display: 'flex', gap: 8, width: '100%' }}>
+                    <TextField
+                      value={novaDescricao}
+                      onChange={e => setNovaDescricao(e.target.value)}
+                      required
+                      size="small"
+                      fullWidth
+                    />
+                    <TextField
+                      type="date"
+                      value={novaData}
+                      onChange={e => setNovaData(e.target.value)}
+                      required
+                      size="small"
+                      fullWidth
+                      InputLabelProps={{ shrink: true }}
+                    />
+                    <Button type="submit" size="small" variant="contained" color="primary">Salvar</Button>
+                    <Button type="button" onClick={() => setEditando(null)} size="small" color="inherit">Cancelar</Button>
+                  </form>
+                ) : (
+                  <ListItemText
+                    primary={
+                      <Typography variant="subtitle1" sx={{ fontWeight: 500 }}>
+                        {triagem.descricao}
+                      </Typography>
+                    }
+                    secondary={triagem.dt_triagem}
                   />
-                  <TextField
-                    type="date"
-                    value={novaData}
-                    onChange={e => setNovaData(e.target.value)}
-                    required
-                    size="small"
-                    fullWidth
-                    InputLabelProps={{ shrink: true }}
-                  />
-                  <Button type="submit" size="small" variant="contained" color="primary">Salvar</Button>
-                  <Button type="button" onClick={() => setEditando(null)} size="small" color="inherit">Cancelar</Button>
-                </form>
-              ) : (
-                <ListItemText
-                  primary={
-                    <Typography variant="subtitle1" sx={{ fontWeight: 500 }}>
-                      {triagem.descricao}
-                    </Typography>
-                  }
-                  secondary={triagem.dt_triagem}
-                />
-              )}
-            </ListItem>
-          ))}
+                )}
+              </ListItem>
+            ))}
         </List>
       </Paper>
     </Box>

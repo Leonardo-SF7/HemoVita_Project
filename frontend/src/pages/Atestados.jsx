@@ -22,6 +22,7 @@ function Atestados() {
   const [idProfi, setIdProfi] = useState('');
   const [pacientes, setPacientes] = useState([]);
   const [profissionais, setProfissionais] = useState([]);
+  const [filtro, setFiltro] = useState('');
   const { token } = useAuth();
   const { showMessage } = useFeedback();
 
@@ -184,58 +185,67 @@ function Atestados() {
           </Grid>
         </form>
         {error && <Typography color="error" sx={{ mt: 1 }}>{error}</Typography>}
+        <TextField
+          label="Buscar atestado"
+          value={filtro}
+          onChange={e => setFiltro(e.target.value)}
+          fullWidth
+          sx={{ mt: 3, mb: 2 }}
+        />
         <Divider sx={{ my: 3 }} />
         <List>
-          {atestados.map(atestado => (
-            <ListItem
-              key={atestado.id_atestado}
-              secondaryAction={
-                editando !== atestado.id_atestado && (
-                  <>
-                    <IconButton onClick={() => startEdit(atestado)} color="primary">
-                      <EditIcon />
-                    </IconButton>
-                    <IconButton onClick={() => handleDelete(atestado.id_atestado)} color="error">
-                      <DeleteIcon />
-                    </IconButton>
-                  </>
-                )
-              }
-              sx={{ mb: 1, borderRadius: 1, bgcolor: editando === atestado.id_atestado ? 'grey.100' : 'inherit' }}
-            >
-              {editando === atestado.id_atestado ? (
-                <form onSubmit={handleEdit} style={{ display: 'flex', gap: 8, width: '100%' }}>
-                  <TextField
-                    value={novaDescricao}
-                    onChange={e => setNovaDescricao(e.target.value)}
-                    required
-                    size="small"
-                    fullWidth
+          {atestados
+            .filter(a => a.descricao.toLowerCase().includes(filtro.toLowerCase()))
+            .map(atestado => (
+              <ListItem
+                key={atestado.id_atestado}
+                secondaryAction={
+                  editando !== atestado.id_atestado && (
+                    <>
+                      <IconButton onClick={() => startEdit(atestado)} color="primary">
+                        <EditIcon />
+                      </IconButton>
+                      <IconButton onClick={() => handleDelete(atestado.id_atestado)} color="error">
+                        <DeleteIcon />
+                      </IconButton>
+                    </>
+                  )
+                }
+                sx={{ mb: 1, borderRadius: 1, bgcolor: editando === atestado.id_atestado ? 'grey.100' : 'inherit' }}
+              >
+                {editando === atestado.id_atestado ? (
+                  <form onSubmit={handleEdit} style={{ display: 'flex', gap: 8, width: '100%' }}>
+                    <TextField
+                      value={novaDescricao}
+                      onChange={e => setNovaDescricao(e.target.value)}
+                      required
+                      size="small"
+                      fullWidth
+                    />
+                    <TextField
+                      type="date"
+                      value={novaData}
+                      onChange={e => setNovaData(e.target.value)}
+                      required
+                      size="small"
+                      fullWidth
+                      InputLabelProps={{ shrink: true }}
+                    />
+                    <Button type="submit" size="small" variant="contained" color="primary">Salvar</Button>
+                    <Button type="button" onClick={() => setEditando(null)} size="small" color="inherit">Cancelar</Button>
+                  </form>
+                ) : (
+                  <ListItemText
+                    primary={
+                      <Typography variant="subtitle1" sx={{ fontWeight: 500 }}>
+                        {atestado.descricao}
+                      </Typography>
+                    }
+                    secondary={atestado.dt_emissao}
                   />
-                  <TextField
-                    type="date"
-                    value={novaData}
-                    onChange={e => setNovaData(e.target.value)}
-                    required
-                    size="small"
-                    fullWidth
-                    InputLabelProps={{ shrink: true }}
-                  />
-                  <Button type="submit" size="small" variant="contained" color="primary">Salvar</Button>
-                  <Button type="button" onClick={() => setEditando(null)} size="small" color="inherit">Cancelar</Button>
-                </form>
-              ) : (
-                <ListItemText
-                  primary={
-                    <Typography variant="subtitle1" sx={{ fontWeight: 500 }}>
-                      {atestado.descricao}
-                    </Typography>
-                  }
-                  secondary={atestado.dt_emissao}
-                />
-              )}
-            </ListItem>
-          ))}
+                )}
+              </ListItem>
+            ))}
         </List>
       </Paper>
     </Box>

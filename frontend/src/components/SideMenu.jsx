@@ -55,6 +55,8 @@ function SideMenu() {
   const location = useLocation();
   const [open, setOpen] = useState(false);
 
+  console.log('Role atual:', role);
+
   if (!token) return null;
 
   return (

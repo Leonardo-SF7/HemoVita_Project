@@ -9,6 +9,8 @@ import {
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
+import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
+import jsPDF from 'jspdf';
 
 function Exames() {
   const [exames, setExames] = useState([]);
@@ -23,6 +25,7 @@ function Exames() {
   const [idProfi, setIdProfi] = useState('');
   const [pacientes, setPacientes] = useState([]);
   const [profissionais, setProfissionais] = useState([]);
+  const [filtro, setFiltro] = useState('');
   const { token } = useAuth();
   const { showMessage } = useFeedback();
 
@@ -116,6 +119,29 @@ function Exames() {
     }
   }
 
+  const exportarPDF = () => {
+    const doc = new jsPDF();
+    doc.setFontSize(16);
+    doc.text('Relatório de Exames', 10, 10);
+
+    let y = 20;
+    exames.forEach((e, i) => {
+      doc.setFontSize(12);
+      doc.text(
+        `${i + 1}. Tipo: ${e.tipo_exame} | Resultado: ${e.resultado} | Data: ${e.data_exame || e.dt_exame || ''}`,
+        10,
+        y
+      );
+      y += 8;
+      if (y > 270) {
+        doc.addPage();
+        y = 10;
+      }
+    });
+
+    doc.save('relatorio_exames.pdf');
+  };
+
   return (
     <Box sx={{ maxWidth: 600, mx: 'auto', mt: 4 }}>
       <Paper elevation={3} sx={{ p: 3 }}>
@@ -202,97 +228,115 @@ function Exames() {
           </Grid>
         </form>
         {error && <Typography color="error" sx={{ mt: 1 }}>{error}</Typography>}
+        <TextField
+          label="Buscar exame"
+          value={filtro}
+          onChange={e => setFiltro(e.target.value)}
+          fullWidth
+          sx={{ mt: 3, mb: 2 }}
+        />
         <Divider sx={{ my: 3 }} />
         <List>
-          {exames.map(exame => (
-            <ListItem
-              key={exame.id_exame}
-              secondaryAction={
-                editando !== exame.id_exame && (
-                  <>
-                    <IconButton onClick={() => startEdit(exame)} color="primary">
-                      <EditIcon />
-                    </IconButton>
-                    <IconButton onClick={() => handleDelete(exame.id_exame)} color="error">
-                      <DeleteIcon />
-                    </IconButton>
-                  </>
-                )
-              }
-              sx={{ mb: 1, borderRadius: 1, bgcolor: editando === exame.id_exame ? 'grey.100' : 'inherit' }}
-            >
-              {editando === exame.id_exame ? (
-                <form onSubmit={handleEdit} style={{ display: 'flex', gap: 8, width: '100%' }}>
-                  <TextField
-                    value={novoTipo}
-                    onChange={e => setNovoTipo(e.target.value)}
-                    required
-                    size="small"
-                    fullWidth
+          {exames
+            .filter(e => e.tipo_exame.toLowerCase().includes(filtro.toLowerCase()))
+            .map(exame => (
+              <ListItem
+                key={exame.id_exame}
+                secondaryAction={
+                  editando !== exame.id_exame && (
+                    <>
+                      <IconButton onClick={() => startEdit(exame)} color="primary">
+                        <EditIcon />
+                      </IconButton>
+                      <IconButton onClick={() => handleDelete(exame.id_exame)} color="error">
+                        <DeleteIcon />
+                      </IconButton>
+                    </>
+                  )
+                }
+                sx={{ mb: 1, borderRadius: 1, bgcolor: editando === exame.id_exame ? 'grey.100' : 'inherit' }}
+              >
+                {editando === exame.id_exame ? (
+                  <form onSubmit={handleEdit} style={{ display: 'flex', gap: 8, width: '100%' }}>
+                    <TextField
+                      value={novoTipo}
+                      onChange={e => setNovoTipo(e.target.value)}
+                      required
+                      size="small"
+                      fullWidth
+                    />
+                    <TextField
+                      value={novoResultado}
+                      onChange={e => setNovoResultado(e.target.value)}
+                      required
+                      size="small"
+                      fullWidth
+                    />
+                    <TextField
+                      type="date"
+                      value={dataExame}
+                      onChange={e => setDataExame(e.target.value)}
+                      required
+                      size="small"
+                      fullWidth
+                    />
+                    <TextField
+                      select
+                      value={idPaciente}
+                      onChange={e => setIdPaciente(e.target.value)}
+                      required
+                      size="small"
+                      fullWidth
+                      SelectProps={{ native: true }}
+                    >
+                      <option value="">Selecione</option>
+                      {pacientes.map(paciente => (
+                        <option key={paciente.id_paciente} value={paciente.id_paciente}>
+                          {paciente.nome_paciente}
+                        </option>
+                      ))}
+                    </TextField>
+                    <TextField
+                      select
+                      value={idProfi}
+                      onChange={e => setIdProfi(e.target.value)}
+                      required
+                      size="small"
+                      fullWidth
+                      SelectProps={{ native: true }}
+                    >
+                      <option value="">Selecione</option>
+                      {profissionais.map(profissional => (
+                        <option key={profissional.id_profi} value={profissional.id_profi}>
+                          {profissional.nome_profi}
+                        </option>
+                      ))}
+                    </TextField>
+                    <Button type="submit" size="small" variant="contained" color="primary">Salvar</Button>
+                    <Button type="button" onClick={() => setEditando(null)} size="small" color="inherit">Cancelar</Button>
+                  </form>
+                ) : (
+                  <ListItemText
+                    primary={
+                      <Typography variant="subtitle1" sx={{ fontWeight: 500 }}>
+                        {exame.tipo_exame}
+                      </Typography>
+                    }
+                    secondary={exame.resultado}
                   />
-                  <TextField
-                    value={novoResultado}
-                    onChange={e => setNovoResultado(e.target.value)}
-                    required
-                    size="small"
-                    fullWidth
-                  />
-                  <TextField
-                    type="date"
-                    value={dataExame}
-                    onChange={e => setDataExame(e.target.value)}
-                    required
-                    size="small"
-                    fullWidth
-                  />
-                  <TextField
-                    select
-                    value={idPaciente}
-                    onChange={e => setIdPaciente(e.target.value)}
-                    required
-                    size="small"
-                    fullWidth
-                    SelectProps={{ native: true }}
-                  >
-                    <option value="">Selecione</option>
-                    {pacientes.map(paciente => (
-                      <option key={paciente.id_paciente} value={paciente.id_paciente}>
-                        {paciente.nome_paciente}
-                      </option>
-                    ))}
-                  </TextField>
-                  <TextField
-                    select
-                    value={idProfi}
-                    onChange={e => setIdProfi(e.target.value)}
-                    required
-                    size="small"
-                    fullWidth
-                    SelectProps={{ native: true }}
-                  >
-                    <option value="">Selecione</option>
-                    {profissionais.map(profissional => (
-                      <option key={profissional.id_profi} value={profissional.id_profi}>
-                        {profissional.nome_profi}
-                      </option>
-                    ))}
-                  </TextField>
-                  <Button type="submit" size="small" variant="contained" color="primary">Salvar</Button>
-                  <Button type="button" onClick={() => setEditando(null)} size="small" color="inherit">Cancelar</Button>
-                </form>
-              ) : (
-                <ListItemText
-                  primary={
-                    <Typography variant="subtitle1" sx={{ fontWeight: 500 }}>
-                      {exame.tipo_exame}
-                    </Typography>
-                  }
-                  secondary={exame.resultado}
-                />
-              )}
-            </ListItem>
-          ))}
+                )}
+              </ListItem>
+            ))}
         </List>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={exportarPDF}
+          startIcon={<PictureAsPdfIcon />}
+          sx={{ mb: 2 }}
+        >
+          Exportar PDF
+        </Button>
       </Paper>
     </Box>
   );

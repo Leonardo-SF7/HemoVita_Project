@@ -27,6 +27,7 @@ function Prontuarios() {
   const [novoIdPaciente, setNovoIdPaciente] = useState('');
   const [novoIdProfi, setNovoIdProfi] = useState('');
   const [novoIdAtendimento, setNovoIdAtendimento] = useState('');
+  const [filtro, setFiltro] = useState('');
   const { token } = useAuth();
   const { showMessage } = useFeedback();
 
@@ -215,114 +216,123 @@ function Prontuarios() {
           </Grid>
         </form>
         {error && <Typography color="error" sx={{ mt: 1 }}>{error}</Typography>}
+        <TextField
+          label="Buscar prontuário"
+          value={filtro}
+          onChange={e => setFiltro(e.target.value)}
+          fullWidth
+          sx={{ mt: 3, mb: 2 }}
+        />
         <Divider sx={{ my: 3 }} />
         <List>
-          {prontuarios.map(prontuario => (
-            <ListItem
-              key={prontuario.id_prontuario}
-              secondaryAction={
-                editando !== prontuario.id_prontuario && (
-                  <>
-                    <IconButton onClick={() => startEdit(prontuario)} color="primary">
-                      <EditIcon />
-                    </IconButton>
-                    <IconButton onClick={() => handleDelete(prontuario.id_prontuario)} color="error">
-                      <DeleteIcon />
-                    </IconButton>
-                  </>
-                )
-              }
-              sx={{ mb: 1, borderRadius: 1, bgcolor: editando === prontuario.id_prontuario ? 'grey.100' : 'inherit' }}
-            >
-              {editando === prontuario.id_prontuario ? (
-                <form onSubmit={handleEdit} style={{ display: 'flex', gap: 8, width: '100%' }}>
-                  <TextField
-                    value={novoDiagnostico}
-                    onChange={e => setNovoDiagnostico(e.target.value)}
-                    required
-                    size="small"
-                    fullWidth
-                  />
-                  <TextField
-                    value={novasAnotacoes}
-                    onChange={e => setNovasAnotacoes(e.target.value)}
-                    multiline
-                    rows={3}
-                    size="small"
-                    fullWidth
-                  />
-                  <TextField
-                    select
-                    label="Paciente"
-                    value={novoIdPaciente}
-                    onChange={e => setNovoIdPaciente(e.target.value)}
-                    required
-                    size="small"
-                    fullWidth
-                    SelectProps={{ native: true }}
-                    InputLabelProps={{ shrink: true }}
-                  >
-                    <option value="">Selecione</option>
-                    {pacientes.map(p => (
-                      <option key={p.id_paciente} value={p.id_paciente}>{p.nome_paciente}</option>
-                    ))}
-                  </TextField>
-                  <TextField
-                    select
-                    label="Profissional"
-                    value={novoIdProfi}
-                    onChange={e => setNovoIdProfi(e.target.value)}
-                    required
-                    size="small"
-                    fullWidth
-                    SelectProps={{ native: true }}
-                    InputLabelProps={{ shrink: true }}
-                  >
-                    <option value="">Selecione</option>
-                    {profissionais.map(p => (
-                      <option key={p.id_profi} value={p.id_profi}>{p.nome_profi}</option>
-                    ))}
-                  </TextField>
-                  <TextField
-                    select
-                    label="Atendimento"
-                    value={novoIdAtendimento}
-                    onChange={e => setNovoIdAtendimento(e.target.value)}
-                    required
-                    size="small"
-                    fullWidth
-                    SelectProps={{ native: true }}
-                    InputLabelProps={{ shrink: true }}
-                  >
-                    <option value="">Selecione</option>
-                    {atendimentos.map(a => (
-                      <option key={a.id_atendimento} value={a.id_atendimento}>{a.id_atendimento}</option>
-                    ))}
-                  </TextField>
-                  <Button type="submit" size="small" variant="contained" color="primary">Salvar</Button>
-                  <Button type="button" onClick={() => setEditando(null)} size="small" color="inherit">Cancelar</Button>
-                </form>
-              ) : (
-                <ListItemText
-                  primary={
-                    <Typography variant="subtitle1" sx={{ fontWeight: 500 }}>
-                      {prontuario.diagnostico}
-                    </Typography>
-                  }
-                  secondary={
-                    <Box>
-                      <Typography variant="body2" color="text.secondary">
-                        {prontuario.anotacoes}
+          {prontuarios
+            .filter(p => p.diagnostico.toLowerCase().includes(filtro.toLowerCase()))
+            .map(prontuario => (
+              <ListItem
+                key={prontuario.id_prontuario}
+                secondaryAction={
+                  editando !== prontuario.id_prontuario && (
+                    <>
+                      <IconButton onClick={() => startEdit(prontuario)} color="primary">
+                        <EditIcon />
+                      </IconButton>
+                      <IconButton onClick={() => handleDelete(prontuario.id_prontuario)} color="error">
+                        <DeleteIcon />
+                      </IconButton>
+                    </>
+                  )
+                }
+                sx={{ mb: 1, borderRadius: 1, bgcolor: editando === prontuario.id_prontuario ? 'grey.100' : 'inherit' }}
+              >
+                {editando === prontuario.id_prontuario ? (
+                  <form onSubmit={handleEdit} style={{ display: 'flex', gap: 8, width: '100%' }}>
+                    <TextField
+                      value={novoDiagnostico}
+                      onChange={e => setNovoDiagnostico(e.target.value)}
+                      required
+                      size="small"
+                      fullWidth
+                    />
+                    <TextField
+                      value={novasAnotacoes}
+                      onChange={e => setNovasAnotacoes(e.target.value)}
+                      multiline
+                      rows={3}
+                      size="small"
+                      fullWidth
+                    />
+                    <TextField
+                      select
+                      label="Paciente"
+                      value={novoIdPaciente}
+                      onChange={e => setNovoIdPaciente(e.target.value)}
+                      required
+                      size="small"
+                      fullWidth
+                      SelectProps={{ native: true }}
+                      InputLabelProps={{ shrink: true }}
+                    >
+                      <option value="">Selecione</option>
+                      {pacientes.map(p => (
+                        <option key={p.id_paciente} value={p.id_paciente}>{p.nome_paciente}</option>
+                      ))}
+                    </TextField>
+                    <TextField
+                      select
+                      label="Profissional"
+                      value={novoIdProfi}
+                      onChange={e => setNovoIdProfi(e.target.value)}
+                      required
+                      size="small"
+                      fullWidth
+                      SelectProps={{ native: true }}
+                      InputLabelProps={{ shrink: true }}
+                    >
+                      <option value="">Selecione</option>
+                      {profissionais.map(p => (
+                        <option key={p.id_profi} value={p.id_profi}>{p.nome_profi}</option>
+                      ))}
+                    </TextField>
+                    <TextField
+                      select
+                      label="Atendimento"
+                      value={novoIdAtendimento}
+                      onChange={e => setNovoIdAtendimento(e.target.value)}
+                      required
+                      size="small"
+                      fullWidth
+                      SelectProps={{ native: true }}
+                      InputLabelProps={{ shrink: true }}
+                    >
+                      <option value="">Selecione</option>
+                      {atendimentos.map(a => (
+                        <option key={a.id_atendimento} value={a.id_atendimento}>{a.id_atendimento}</option>
+                      ))}
+                    </TextField>
+                    <Button type="submit" size="small" variant="contained" color="primary">Salvar</Button>
+                    <Button type="button" onClick={() => setEditando(null)} size="small" color="inherit">Cancelar</Button>
+                  </form>
+                ) : (
+                  <ListItemText
+                    primary={
+                      <Typography variant="subtitle1" sx={{ fontWeight: 500 }}>
+                        {prontuario.diagnostico}
                       </Typography>
-                      <Typography variant="caption" color="text.secondary">
-                        {`Paciente: ${prontuario.id_paciente}, Profissional: ${prontuario.id_profi}, Atendimento: ${prontuario.id_atendimento}`}
-                      </Typography>
-                    </Box>
-                  }
-                />
-              )}
-            </ListItem>
-          ))}
+                    }
+                    secondary={
+                      <Box>
+                        <Typography variant="body2" color="text.secondary">
+                          {prontuario.anotacoes}
+                        </Typography>
+                        <Typography variant="caption" color="text.secondary">
+                          {`Paciente: ${prontuario.id_paciente}, Profissional: ${prontuario.id_profi}, Atendimento: ${prontuario.id_atendimento}`}
+                        </Typography>
+                      </Box>
+                    }
+                  />
+                )}
+              </ListItem>
+            ))}
         </List>
       </Paper>
     </Box>

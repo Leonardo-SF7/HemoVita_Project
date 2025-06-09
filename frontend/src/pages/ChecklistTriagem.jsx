@@ -22,6 +22,7 @@ function ChecklistTriagem() {
   const [idProfi, setIdProfi] = useState('');
   const [pacientes, setPacientes] = useState([]);
   const [profissionais, setProfissionais] = useState([]);
+  const [filtro, setFiltro] = useState('');
   const { token } = useAuth();
   const { showMessage } = useFeedback();
 
@@ -184,58 +185,67 @@ function ChecklistTriagem() {
           </Grid>
         </form>
         {error && <Typography color="error" sx={{ mt: 1 }}>{error}</Typography>}
+        <TextField
+          label="Buscar checklist"
+          value={filtro}
+          onChange={e => setFiltro(e.target.value)}
+          fullWidth
+          sx={{ mt: 3, mb: 2 }}
+        />
         <Divider sx={{ my: 3 }} />
         <List>
-          {checklists.map(checklist => (
-            <ListItem
-              key={checklist.id_checklist}
-              secondaryAction={
-                editando !== checklist.id_checklist && (
-                  <>
-                    <IconButton onClick={() => startEdit(checklist)} color="primary">
-                      <EditIcon />
-                    </IconButton>
-                    <IconButton onClick={() => handleDelete(checklist.id_checklist)} color="error">
-                      <DeleteIcon />
-                    </IconButton>
-                  </>
-                )
-              }
-              sx={{ mb: 1, borderRadius: 1, bgcolor: editando === checklist.id_checklist ? 'grey.100' : 'inherit' }}
-            >
-              {editando === checklist.id_checklist ? (
-                <form onSubmit={handleEdit} style={{ display: 'flex', gap: 8, width: '100%' }}>
-                  <TextField
-                    value={novaDescricao}
-                    onChange={e => setNovaDescricao(e.target.value)}
-                    required
-                    size="small"
-                    fullWidth
+          {checklists
+            .filter(c => c.descricao.toLowerCase().includes(filtro.toLowerCase()))
+            .map(checklist => (
+              <ListItem
+                key={checklist.id_checklist}
+                secondaryAction={
+                  editando !== checklist.id_checklist && (
+                    <>
+                      <IconButton onClick={() => startEdit(checklist)} color="primary">
+                        <EditIcon />
+                      </IconButton>
+                      <IconButton onClick={() => handleDelete(checklist.id_checklist)} color="error">
+                        <DeleteIcon />
+                      </IconButton>
+                    </>
+                  )
+                }
+                sx={{ mb: 1, borderRadius: 1, bgcolor: editando === checklist.id_checklist ? 'grey.100' : 'inherit' }}
+              >
+                {editando === checklist.id_checklist ? (
+                  <form onSubmit={handleEdit} style={{ display: 'flex', gap: 8, width: '100%' }}>
+                    <TextField
+                      value={novaDescricao}
+                      onChange={e => setNovaDescricao(e.target.value)}
+                      required
+                      size="small"
+                      fullWidth
+                    />
+                    <TextField
+                      type="date"
+                      value={novaData}
+                      onChange={e => setNovaData(e.target.value)}
+                      required
+                      size="small"
+                      fullWidth
+                      InputLabelProps={{ shrink: true }}
+                    />
+                    <Button type="submit" size="small" variant="contained" color="primary">Salvar</Button>
+                    <Button type="button" onClick={() => setEditando(null)} size="small" color="inherit">Cancelar</Button>
+                  </form>
+                ) : (
+                  <ListItemText
+                    primary={
+                      <Typography variant="subtitle1" sx={{ fontWeight: 500 }}>
+                        {checklist.descricao}
+                      </Typography>
+                    }
+                    secondary={checklist.dt_checklist}
                   />
-                  <TextField
-                    type="date"
-                    value={novaData}
-                    onChange={e => setNovaData(e.target.value)}
-                    required
-                    size="small"
-                    fullWidth
-                    InputLabelProps={{ shrink: true }}
-                  />
-                  <Button type="submit" size="small" variant="contained" color="primary">Salvar</Button>
-                  <Button type="button" onClick={() => setEditando(null)} size="small" color="inherit">Cancelar</Button>
-                </form>
-              ) : (
-                <ListItemText
-                  primary={
-                    <Typography variant="subtitle1" sx={{ fontWeight: 500 }}>
-                      {checklist.descricao}
-                    </Typography>
-                  }
-                  secondary={checklist.dt_checklist}
-                />
-              )}
-            </ListItem>
-          ))}
+                )}
+              </ListItem>
+            ))}
         </List>
       </Paper>
     </Box>

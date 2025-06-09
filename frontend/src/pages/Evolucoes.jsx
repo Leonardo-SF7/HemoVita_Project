@@ -22,6 +22,7 @@ function Evolucoes() {
   const [idProfi, setIdProfi] = useState('');
   const [pacientes, setPacientes] = useState([]);
   const [profissionais, setProfissionais] = useState([]);
+  const [filtro, setFiltro] = useState('');
   const { token } = useAuth();
   const { showMessage } = useFeedback();
 
@@ -184,58 +185,67 @@ function Evolucoes() {
           </Grid>
         </form>
         {error && <Typography color="error" sx={{ mt: 1 }}>{error}</Typography>}
+        <TextField
+          label="Buscar evolução"
+          value={filtro}
+          onChange={e => setFiltro(e.target.value)}
+          fullWidth
+          sx={{ mt: 3, mb: 2 }}
+        />
         <Divider sx={{ my: 3 }} />
         <List>
-          {evolucoes.map(evolucao => (
-            <ListItem
-              key={evolucao.id_evolucao}
-              secondaryAction={
-                editando !== evolucao.id_evolucao && (
-                  <>
-                    <IconButton onClick={() => startEdit(evolucao)} color="primary">
-                      <EditIcon />
-                    </IconButton>
-                    <IconButton onClick={() => handleDelete(evolucao.id_evolucao)} color="error">
-                      <DeleteIcon />
-                    </IconButton>
-                  </>
-                )
-              }
-              sx={{ mb: 1, borderRadius: 1, bgcolor: editando === evolucao.id_evolucao ? 'grey.100' : 'inherit' }}
-            >
-              {editando === evolucao.id_evolucao ? (
-                <form onSubmit={handleEdit} style={{ display: 'flex', gap: 8, width: '100%' }}>
-                  <TextField
-                    value={novaDescricao}
-                    onChange={e => setNovaDescricao(e.target.value)}
-                    required
-                    size="small"
-                    fullWidth
+          {evolucoes
+            .filter(e => e.descricao.toLowerCase().includes(filtro.toLowerCase()))
+            .map(evolucao => (
+              <ListItem
+                key={evolucao.id_evolucao}
+                secondaryAction={
+                  editando !== evolucao.id_evolucao && (
+                    <>
+                      <IconButton onClick={() => startEdit(evolucao)} color="primary">
+                        <EditIcon />
+                      </IconButton>
+                      <IconButton onClick={() => handleDelete(evolucao.id_evolucao)} color="error">
+                        <DeleteIcon />
+                      </IconButton>
+                    </>
+                  )
+                }
+                sx={{ mb: 1, borderRadius: 1, bgcolor: editando === evolucao.id_evolucao ? 'grey.100' : 'inherit' }}
+              >
+                {editando === evolucao.id_evolucao ? (
+                  <form onSubmit={handleEdit} style={{ display: 'flex', gap: 8, width: '100%' }}>
+                    <TextField
+                      value={novaDescricao}
+                      onChange={e => setNovaDescricao(e.target.value)}
+                      required
+                      size="small"
+                      fullWidth
+                    />
+                    <TextField
+                      type="date"
+                      value={novaData}
+                      onChange={e => setNovaData(e.target.value)}
+                      required
+                      size="small"
+                      fullWidth
+                      InputLabelProps={{ shrink: true }}
+                    />
+                    <Button type="submit" size="small" variant="contained" color="primary">Salvar</Button>
+                    <Button type="button" onClick={() => setEditando(null)} size="small" color="inherit">Cancelar</Button>
+                  </form>
+                ) : (
+                  <ListItemText
+                    primary={
+                      <Typography variant="subtitle1" sx={{ fontWeight: 500 }}>
+                        {evolucao.descricao}
+                      </Typography>
+                    }
+                    secondary={evolucao.dt_evolucao}
                   />
-                  <TextField
-                    type="date"
-                    value={novaData}
-                    onChange={e => setNovaData(e.target.value)}
-                    required
-                    size="small"
-                    fullWidth
-                    InputLabelProps={{ shrink: true }}
-                  />
-                  <Button type="submit" size="small" variant="contained" color="primary">Salvar</Button>
-                  <Button type="button" onClick={() => setEditando(null)} size="small" color="inherit">Cancelar</Button>
-                </form>
-              ) : (
-                <ListItemText
-                  primary={
-                    <Typography variant="subtitle1" sx={{ fontWeight: 500 }}>
-                      {evolucao.descricao}
-                    </Typography>
-                  }
-                  secondary={evolucao.dt_evolucao}
-                />
-              )}
-            </ListItem>
-          ))}
+                )}
+              </ListItem>
+            ))}
         </List>
       </Paper>
     </Box>

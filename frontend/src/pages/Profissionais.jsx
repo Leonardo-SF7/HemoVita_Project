@@ -24,6 +24,7 @@ function Profissionais() {
   const [editando, setEditando] = useState(null);
   const [novoNome, setNovoNome] = useState('');
   const [novoCargo, setNovoCargo] = useState('');
+  const [filtro, setFiltro] = useState('');
   const { token } = useAuth();
   const { showMessage } = useFeedback();
 
@@ -195,56 +196,65 @@ function Profissionais() {
           </Grid>
         </form>
         {error && <Typography color="error" sx={{ mt: 1 }}>{error}</Typography>}
+        <TextField
+          label="Buscar profissional"
+          value={filtro}
+          onChange={e => setFiltro(e.target.value)}
+          fullWidth
+          sx={{ mt: 3,  mb: 2 }}
+        />
         <Divider sx={{ my: 3 }} />
         <List>
-          {profissionais.map(prof => (
-            <ListItem
-              key={prof.id_profi}
-              secondaryAction={
-                editando !== prof.id_profi && (
-                  <>
-                    <IconButton onClick={() => startEdit(prof)} color="primary">
-                      <EditIcon />
-                    </IconButton>
-                    <IconButton onClick={() => handleDelete(prof.id_profi)} color="error">
-                      <DeleteIcon />
-                    </IconButton>
-                  </>
-                )
-              }
-              sx={{ mb: 1, borderRadius: 1, bgcolor: editando === prof.id_profi ? 'grey.100' : 'inherit' }}
-            >
-              {editando === prof.id_profi ? (
-                <form onSubmit={handleEdit} style={{ display: 'flex', gap: 8, width: '100%' }}>
-                  <TextField
-                    value={novoNome}
-                    onChange={e => setNovoNome(e.target.value)}
-                    required
-                    size="small"
-                    fullWidth
+          {profissionais
+            .filter(p => p.nome_profi.toLowerCase().includes(filtro.toLowerCase()))
+            .map(prof => (
+              <ListItem
+                key={prof.id_profi}
+                secondaryAction={
+                  editando !== prof.id_profi && (
+                    <>
+                      <IconButton onClick={() => startEdit(prof)} color="primary">
+                        <EditIcon />
+                      </IconButton>
+                      <IconButton onClick={() => handleDelete(prof.id_profi)} color="error">
+                        <DeleteIcon />
+                      </IconButton>
+                    </>
+                  )
+                }
+                sx={{ mb: 1, borderRadius: 1, bgcolor: editando === prof.id_profi ? 'grey.100' : 'inherit' }}
+              >
+                {editando === prof.id_profi ? (
+                  <form onSubmit={handleEdit} style={{ display: 'flex', gap: 8, width: '100%' }}>
+                    <TextField
+                      value={novoNome}
+                      onChange={e => setNovoNome(e.target.value)}
+                      required
+                      size="small"
+                      fullWidth
+                    />
+                    <TextField
+                      value={novoCargo}
+                      onChange={e => setNovoCargo(e.target.value)}
+                      required
+                      size="small"
+                      fullWidth
+                    />
+                    <Button type="submit" size="small" variant="contained" color="primary">Salvar</Button>
+                    <Button type="button" onClick={() => setEditando(null)} size="small" color="inherit">Cancelar</Button>
+                  </form>
+                ) : (
+                  <ListItemText
+                    primary={
+                      <Typography variant="subtitle1" sx={{ fontWeight: 500 }}>
+                        {prof.nome_profi}
+                      </Typography>
+                    }
+                    secondary={prof.cargo}
                   />
-                  <TextField
-                    value={novoCargo}
-                    onChange={e => setNovoCargo(e.target.value)}
-                    required
-                    size="small"
-                    fullWidth
-                  />
-                  <Button type="submit" size="small" variant="contained" color="primary">Salvar</Button>
-                  <Button type="button" onClick={() => setEditando(null)} size="small" color="inherit">Cancelar</Button>
-                </form>
-              ) : (
-                <ListItemText
-                  primary={
-                    <Typography variant="subtitle1" sx={{ fontWeight: 500 }}>
-                      {prof.nome_profi}
-                    </Typography>
-                  }
-                  secondary={prof.cargo}
-                />
-              )}
-            </ListItem>
-          ))}
+                )}
+              </ListItem>
+            ))}
         </List>
       </Paper>
     </Box>
