@@ -46,6 +46,7 @@ docker-compose up --build
 ```
 
 - O backend estará disponível em `http://localhost:3001`
+  - As rotas da API começam com `/api`, por exemplo: `http://localhost:3001/api/pacientes`
 - O frontend estará disponível em `http://localhost:3000`
 - O banco de dados estará disponível conforme configuração do `docker-compose.yml`
 
@@ -120,6 +121,40 @@ npm start
 
 ### Exportação em PDF
 - É possível exportar os dados das principais telas (ex: listagem de pacientes, exames, atendimentos) em formato PDF com apenas um clique.
+
+---
+
+## 📄 Exportação em PDF
+
+- Em cada listagem, clique no botão "Exportar PDF" para baixar os dados da tabela.
+
+## 🔎 Filtro de Busca
+
+- Use o campo de busca no topo das listagens para filtrar rapidamente os registros.
+
+---
+
+## 👤 Usuários de Exemplo
+
+| Perfil         | Usuário         | Senha      |
+| -------------- | -------------- | ---------- |
+| Admin          | admin@demo.com | admin123   |
+| Médico         | medico@demo.com| medico123  |
+| Enfermeiro     | enf@demo.com   | enf123     |
+| Técnico        | tec@demo.com   | tec123     |
+| Recepção       | recep@demo.com | recep123   |
+
+> *Ajuste conforme os dados do seu dump.sql ou crie usuários manualmente.*
+
+---
+
+## 🔐 Perfis e Permissões
+
+- **Admin:** acesso total ao sistema.
+- **Médico:** pode ver e editar pacientes, atendimentos, exames, prontuários, atestados, evoluções.
+- **Enfermeiro:** pode ver pacientes, atendimentos, triagens, farmácia, evoluções.
+- **Técnico:** acesso ao checklist de triagem.
+- **Recepção:** acesso a cadastro e consulta de pacientes e atendimentos.
 
 ---
 
